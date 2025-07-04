@@ -1,0 +1,6 @@
+# Auto-reply responses (one per line)
+# Lines starting with # are comments
+
+Thanks for mentioning me!
+I'm here, what's up?
+Hello! How can I help?

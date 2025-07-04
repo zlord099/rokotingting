@@ -1,0 +1,8 @@
+2025-06-24 11:40:50,146 - INFO - ==================================================
+2025-06-24 11:40:50,146 - INFO - Discord Mass DM Script Started
+2025-06-24 11:40:50,147 - INFO - ==================================================
+2025-06-24 11:42:58,633 - WARNING - PyNaCl is not installed, voice will NOT be supported.
+2025-06-24 11:42:58,633 - INFO - Logging in using static token.
+2025-06-24 11:42:58,744 - INFO - Found user agent Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36, build number 411537.
+2025-06-24 11:43:00,047 - INFO - Connected to Gateway (Session ID: 2b4bea35c796e0f062f0cbd5805c9b35).
+2025-06-24 11:43:00,914 - INFO - Logged in as cookieloverindahouse#0

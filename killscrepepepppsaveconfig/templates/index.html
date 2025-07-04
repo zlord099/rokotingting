@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MasterHub - Web Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a0d2e 0%, #16213e 50%, #0f0f23 100%);
+            color: #e4e6ea;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 25% 25%, rgba(120, 53, 255, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 75% 75%, rgba(79, 70, 229, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #9d4edd;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #9d4edd, #7209b7, #5e0bd8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(157, 78, 221, 0.5);
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojOWQ0ZWRkO3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjUwJSIgc3R5bGU9InN0b3AtY29sb3I6IzcyMDliNztzdG9wLW9wYWNpdHk6MSIgLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNWUwYmQ4O3N0b3Atb3BhY2l0eToxIiAvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+CjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjM4IiBzdHJva2U9InVybCgjZ3JhZGllbnQpIiBzdHJva2Utd2lkdGg9IjQiIGZpbGw9Im5vbmUiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ1cmwoI2dyYWRpZW50KSI+CjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMiA2aDR2NGgtNFY4em0wIDZ2NGgtNHYtNGg0eiIvPgo8L3N2Zz4KPC9zdmc+') center contain no-repeat;
+            filter: drop-shadow(0 0 20px rgba(157, 78, 221, 0.6));
+            animation: logoGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            0% { filter: drop-shadow(0 0 20px rgba(157, 78, 221, 0.6)); }
+            100% { filter: drop-shadow(0 0 30px rgba(157, 78, 221, 0.9)); }
+        }
+
+        .warning {
+            background: linear-gradient(135deg, #d63031, #e17055);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #e17055;
+            box-shadow: 0 4px 15px rgba(214, 48, 49, 0.3);
+        }
+
+        .card {
+            background: linear-gradient(145deg, #1e1a2e, #2a1f3d);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #4c4f69;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+        }
+
+        .login-section {
+            display: block;
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #b9bbbe;
+        }
+
+        input[type="text"], input[type="password"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #4c4f69;
+            border-radius: 8px;
+            font-size: 16px;
+            background: rgba(30, 26, 46, 0.8);
+            color: #e4e6ea;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #9d4edd;
+            box-shadow: 0 0 15px rgba(157, 78, 221, 0.3);
+            background: rgba(30, 26, 46, 0.9);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #9d4edd, #7209b7);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(157, 78, 221, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #a663ea, #7f2dd1);
+            box-shadow: 0 6px 20px rgba(157, 78, 221, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            border: 1px solid #00b894;
+            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+        }
+
+        .status.error {
+            background: linear-gradient(135deg, #e84393, #fd79a8);
+            color: white;
+            border: 1px solid #e84393;
+            box-shadow: 0 4px 15px rgba(232, 67, 147, 0.3);
+        }
+
+        .status.info {
+            background: linear-gradient(135deg, #9d4edd, #7209b7);
+            color: white;
+            border: 1px solid #9d4edd;
+            box-shadow: 0 4px 15px rgba(157, 78, 221, 0.3);
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .server-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #40444b;
+            border-radius: 4px;
+            padding: 10px;
+            background: #40444b;
+        }
+
+        .server-item {
+            padding: 10px;
+            border-bottom: 1px solid #36393f;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .server-item:hover {
+            background: #f8f9fa;
+        }
+
+        .server-item.selected {
+            background: #667eea;
+            color: white;
+        }
+
+        .channel-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .channel-item {
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 2px 0;
+        }
+
+        .channel-item:hover {
+            background: #e9ecef;
+        }
+
+        .channel-item.selected {
+            background: #764ba2;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tab-navigation {
+            display: flex;
+            border-bottom: 2px solid #e1e5e9;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #9ca3af;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tab-btn.active {
+            color: #9d4edd;
+            border-bottom-color: #9d4edd;
+            background: rgba(157, 78, 221, 0.1);
+        }
+
+        .tab-btn:hover {
+            background: rgba(157, 78, 221, 0.2);
+            color: #b794f6;
+        }
+
+        .tab-content.hidden {
+            display: none;
+        }
+
+        .selected-channels {
+            border: 1px solid #40444b;
+            border-radius: 4px;
+            padding: 10px;
+            min-height: 100px;
+            margin-bottom: 10px;
+            background: #40444b;
+        }
+
+        .channel-tag {
+            display: inline-block;
+            background: #7289da;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 12px;
+            margin: 3px;
+            font-size: 12px;
+        }
+
+        .channel-tag .remove {
+            margin-left: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.hidden {
+            display: none !important;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e1e5e9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #e1e5e9;
+            text-align: right;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 5px;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #333;
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+
+        .channel-checkbox {
+            display: block;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .channel-checkbox:hover {
+            background: #f8f9fa;
+        }
+
+        .channel-checkbox input {
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .tab-navigation {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .warning-message {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .warning-message strong {
+            color: #b7791f;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #a663ea, #7f2dd1);
+            box-shadow: 0 6px 20px rgba(157, 78, 221, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn:hover {
+            background: #5865f2;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #ed4245;
+            border-color: #ed4245;
+        }
+
+        .btn-danger:hover {
+            background: #c53030;
+            border-color: #c53030;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo"></div>
+            <h1>🔍 MasterHub</h1>
+            <p>Web Interface for Discord Server Management</p>
+        </div>
+
+        <div class="warning">
+            ⚠️ WARNING: This tool uses self-botting which violates Discord's Terms of Service. Use at your own risk.
+        </div>
+
+        <!-- Login Section -->
+        <div class="login-section card">
+            <h2>Connect to Discord</h2>
+            <div class="form-group">
+                <label for="token">Discord Token:</label>
+                <input type="password" id="token" placeholder="Enter your Discord user token">
+                <small style="color: #666; display: block; margin-top: 5px;">
+                    Get your token from Discord Developer Tools → Network → Authorization header
+                </small>
+            </div>
+            <button class="btn" onclick="connectToDiscord()" type="button" id="connectBtn">Connect</button>
+            <div id="connectionStatus"></div>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="dashboard">
+            <div class="card">
+                <h2>Dashboard</h2>
+                <div id="userInfo"></div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="card">
+                <div class="tab-navigation">
+                    <button class="tab-btn active" onclick="showTab('servers')" type="button">Servers & Channels</button>
+                    <button class="tab-btn" onclick="showTab('multichannel')" type="button">Multi-Channel</button>
+                    <button class="tab-btn" onclick="showTab('settings')" type="button">Settings</button>
+                    <button class="tab-btn" onclick="showTab('tools')" type="button">Tools</button>
+                </div>
+            </div>
+
+            <!-- Servers & Channels Tab -->
+            <div id="serversTab" class="tab-content">
+                <div class="two-column">
+                    <div class="card">
+                        <h3>Servers & Channels</h3>
+                        <div id="serverList" class="server-list"></div>
+                        <div id="channelList" class="channel-list hidden"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Send Message</h3>
+                        <div class="form-group">
+                            <label for="message">Message:</label>
+                            <textarea id="message" rows="4" placeholder="Enter your message..."></textarea>
+                        </div>
+                        <div class="two-column">
+                            <div class="form-group">
+                                <label for="messageCount">Number of Messages:</label>
+                                <input type="number" id="messageCount" value="1" min="1" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label for="messageDelay">Delay Between Messages (seconds):</label>
+                                <input type="number" id="messageDelay" value="1" min="0.1" step="0.1">
+                            </div>
+                        </div>
+                        <button class="btn" onclick="sendMessage()" id="sendBtn" disabled type="button">Send Message(s)</button>
+                        <div id="messageStatus"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Multi-Channel Tab -->
+            <div id="multichannelTab" class="tab-content hidden">
+                <div class="card">
+                    <h3>Multi-Channel Broadcasting</h3>
+                    <div class="form-group">
+                        <label>Selected Channels:</label>
+                        <div id="selectedChannels" class="selected-channels"></div>
+                        <button class="btn" onclick="showChannelSelector()" type="button">Add Channels</button>
+                        <button class="btn" onclick="clearSelectedChannels()" type="button">Clear All</button>
+                    </div>
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="waveCountInput">Wave Count:</label>
+                            <input type="number" id="waveCountInput" min="1" max="10" value="1" onchange="updateWaveInputs()" placeholder="Enter number of waves">
+                            <small>Maximum: 10 waves</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="waveMultiplier">Wave Multiplier:</label>
+                            <input type="number" id="waveMultiplier" min="1" max="1000" value="1" onchange="updateTotalMessages()" placeholder="Repeat wave sequence">
+                            <small>Repeats the entire wave sequence</small>
+                        </div>
+                    </div>
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="broadcastDelayWaves">Delay Between Waves (seconds):</label>
+                            <input type="number" id="broadcastDelayWaves" value="1" min="0.1" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="broadcastDelayMultiplier">Delay Between Multiplier Cycles (seconds):</label>
+                            <input type="number" id="broadcastDelayMultiplier" value="2" min="0.1" step="0.1">
+                        </div>
+                    </div>
+                    <div id="waveMessagesContainer">
+                        <!-- Wave message inputs will be generated here -->
+                    </div>
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="broadcastDelayChannels">Delay Between Channels (seconds):</label>
+                            <input type="number" id="broadcastDelayChannels" value="0.5" min="0" step="0.1">
+                        </div>
+                        <div class="form-group">
+                        </div>
+                    </div>
+                    <div class="total-messages">
+                            <strong>Total Messages to Send: <span id="totalMessagesCount">0</span></strong>
+                            <small>(Channels × Waves = Total Messages)</small>
+                        </div>
+                    <div class="two-column">
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn" onclick="broadcastMessage()" id="broadcastBtn" disabled type="button">Start Broadcast</button>
+                            <button class="btn btn-danger" onclick="killBroadcast()" id="killBroadcastBtn" style="display: none;" type="button">Kill Broadcast</button>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn" onclick="saveBroadcastConfig()" type="button">Save Config</button>
+                            <button class="btn" onclick="document.getElementById('broadcastConfigUpload').click()" type="button">Load Config</button>
+                            <input type="file" id="broadcastConfigUpload" accept=".json" style="display: none;" onchange="loadBroadcastConfig(event)">
+                        </div>
+                    </div>
+                    <div id="broadcastStatus"></div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settingsTab" class="tab-content hidden">
+                <div class="two-column">
+                    <div class="card">
+                        <h3>Message Settings</h3>
+                        <div class="form-group">
+                            <label for="minDelay">Min Delay (seconds):</label>
+                            <input type="number" id="minDelay" value="1" min="0.1" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="maxDelay">Max Delay (seconds):</label>
+                            <input type="number" id="maxDelay" value="3" min="0.1" step="0.1">
+                        </div>
+                        <button class="btn" onclick="updateSettings()" type="button">Update Settings</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>Auto-Reply Settings</h3>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="autoReplyEnabled"> Enable Auto-Reply
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Reply Mode:</label>
+                            <div style="margin-top: 10px;">
+                                <label style="margin-right: 20px;">
+                                    <input type="radio" name="replyMode" value="random" id="randomMode" checked onchange="updateAutoReplyMode()"> Random Messages
+                                </label>
+                                <label>
+                                    <input type="radio" name="replyMode" value="wave" id="waveMode" onchange="updateAutoReplyMode()"> Per-Wave Messages
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="randomModeSection">
+                            <div class="form-group">
+                                <label for="autoReplyMessages">Auto-Reply Messages (one per line):</label>
+                                <textarea id="autoReplyMessages" rows="4" placeholder="Thanks for the message!&#10;I'll get back to you soon!"></textarea>
+                            </div>
+                        </div>
+
+                        <div id="waveModeSection" style="display: none;">
+                            <div class="form-group">
+                                <label for="autoReplyWaveCount">Number of Wave Messages:</label>
+                                <select id="autoReplyWaveCount" onchange="updateAutoReplyWaveInputs()">
+                                    <option value="1">1 Message</option>
+                                    <option value="2">2 Messages</option>
+                                    <option value="3">3 Messages</option>
+                                    <option value="4">4 Messages</option>
+                                    <option value="5">5 Messages</option>
+                                    <option value="6">6 Messages</option>
+                                    <option value="7">7 Messages</option>
+                                    <option value="8">8 Messages</option>
+                                    <option value="9">9 Messages</option>
+                                    <option value="10">10 Messages</option>
+                                </select>
+                                <small style="color: #666; display: block; margin-top: 5px;">
+                                    Each user gets replies in order: 1st reply = Message 1, 2nd reply = Message 2, etc.
+                                </small>
+                            </div>
+                            <div id="autoReplyWaveContainer">
+                                <!-- Wave message inputs will be generated here -->
+                            </div>
+                        </div>
+
+                        <div class="two-column">
+                            <div class="form-group">
+                                <label for="maxRepliesPerUser">Max Replies Per User:</label>
+                                <input type="number" id="maxRepliesPerUser" value="3" min="1" max="20">
+                            </div>
+                            <div class="form-group">
+                                <label for="resetTimeHours">Reset After (hours):</label>
+                                <input type="number" id="resetTimeHours" value="1" min="0.1" step="0.1">
+                            </div>
+                        </div>
+                        <div class="two-column">
+                            <div class="form-group">
+                                <label for="autoReplyDelayMin">Min Delay (seconds):</label>
+                                <input type="number" id="autoReplyDelayMin" value="3" min="0.1" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="autoReplyDelayMax">Max Delay (seconds):</label>
+                                <input type="number" id="autoReplyDelayMax" value="8" min="0.1" step="0.1">
+                            </div>
+                        </div>
+                        <div class="two-column">
+                            <button class="btn" onclick="updateAutoReply()" type="button">Update Auto-Reply</button>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn" onclick="saveAutoReplyConfig()" type="button">Save Config</button>
+                                <button class="btn" onclick="document.getElementById('autoReplyConfigUpload').click()" type="button">Load Config</button>
+                                <input type="file" id="autoReplyConfigUpload" accept=".json" style="display: none;" onchange="loadAutoReplyConfig(event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tools Tab -->
+            <div id="toolsTab" class="tab-content hidden">
+                <div class="two-column">
+                    <div class="card">
+                        <h3>Server Tools</h3>
+                        <button class="btn" onclick="scanServers()" type="button">Rescan All Servers</button>
+                        <button class="btn" onclick="exportData()" type="button">Export Server Data</button>
+                        <button class="btn" onclick="clearCache()" type="button">Clear Cache</button>
+                        <div id="toolsStatus"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Invite Links</h3>
+                        <button class="btn" onclick="extractInvites()" type="button">Extract All Invite Links</button>
+                        <div id="inviteResults"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Channel Selector Modal -->
+            <div id="channelModal" class="modal hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Select Channels</h3>
+                        <button class="close-btn" onclick="closeChannelModal()" type="button">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="allChannelsList"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" onclick="addSelectedChannels()" type="button">Add Selected</button>
+                        <button class="btn" onclick="closeChannelModal()" type="button">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Define connectToDiscord function first to ensure it's available
+        function connectToDiscord() {
+            console.log('Connect button clicked!');
+
+            const token = document.getElementById('token').value.trim();
+            console.log('Token length:', token.length);
+
+            if (!token) {
+                showStatus('connectionStatus', 'Please enter a token', 'error');
+                return;
+            }
+
+            showStatus('connectionStatus', 'Connecting...', 'info');
+
+            fetch('/api/connect', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                credentials: 'include',
+                body: JSON.stringify({token: token})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    sessionId = data.session_id;
+                    checkStatus();
+                    document.getElementById('token').value = '';
+                    showStatus('connectionStatus', 'Connected successfully! Loading servers...', 'success');
+                } else {
+                    showStatus('connectionStatus', 'Failed to connect: ' + (data.error || 'Unknown error'), 'error');
+                }
+            })
+            .catch(error => {
+                showStatus('connectionStatus', 'Network error: ' + error.message, 'error');
+            });
+        }
+
+        // Helper function to get authentication headers
+        function getAuthHeaders() {
+            const headers = {
+                'Content-Type': 'application/json',
+            };
+
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+
+            const authToken = getCookie('discord_token');
+            if (authToken) {
+                headers['Authorization'] = `Bearer ${authToken}`;
+            }
+
+            return headers;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSelectedChannelsDisplay();
+
+            // Debug: Check if connect button exists and is clickable
+            const connectBtn = document.getElementById('connectBtn');
+            if (connectBtn) {
+                console.log('Connect button found');
+                console.log('Button styles:', window.getComputedStyle(connectBtn));
+
+                // Add additional click handler for debugging
+                connectBtn.addEventListener('click', function(e) {
+                    console.log('Button click event triggered');
+                    console.log('Event:', e);
+                });
+            } else {
+                console.log('Connect button NOT found');
+            }
+
+            // Close modal when clicking outside
+            document.addEventListener('click', function(event) {
+                const modal = document.getElementById('channelModal');
+                if (modal && event.target === modal) {
+                    closeChannelModal();
+                }
+            });
+        });
+        let sessionId = null;
+        let selectedServer = null;
+        let selectedChannel = null;
+        let servers = {};
+        let selectedChannelsForBroadcast = [];
+        let currentTab = 'servers';
+
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+
+
+        function checkStatus() {
+            fetch(`/api/status/${sessionId}`, {
+                headers: getAuthHeaders(),
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.connected) {
+                    showDashboard(data);
+                } else if (data.error) {
+                    showStatus('connectionStatus', `Error: ${data.error}`, 'error');
+                } else {
+                    showStatus('connectionStatus', 'Connecting...', 'info');
+                    setTimeout(checkStatus, 2000);
+                }
+            })
+            .catch(error => {
+                setTimeout(checkStatus, 2000);
+            });
+        }
+
+        function showDashboard(data) {
+            document.querySelector('.login-section').style.display = 'none';
+            document.querySelector('.dashboard').style.display = 'block';
+
+            document.getElementById('userInfo').innerHTML = 
+                `<div class="status success">Connected as: ${data.user_info.username} (ID: ${data.user_info.id})</div>`;
+
+
+
+            loadServers();
+        }
+
+        function loadServers() {
+            fetch(`/api/servers/${sessionId}`, {
+                headers: getAuthHeaders(),
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                servers = data.servers;
+                displayServers();
+            });
+        }
+
+        function displayServers() {
+            const serverList = document.getElementById('serverList');
+            serverList.innerHTML = '';
+
+            for (const [serverName, serverData] of Object.entries(servers)) {
+                const serverItem = document.createElement('div');
+                serverItem.className = 'server-item';
+                serverItem.innerHTML = `
+                    <strong>${serverName}</strong><br>
+                    <small>${serverData.text_channels.length} channels</small>
+                `;
+                serverItem.onclick = () => selectServer(serverName, serverData);
+                serverList.appendChild(serverItem);
+            }
+        }
+
+        function selectServer(serverName, serverData) {
+            selectedServer = serverName;
+            selectedChannel = null;
+
+            // Update UI
+            document.querySelectorAll('.server-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            event.target.closest('.server-item').classList.add('selected');
+
+            // Show channels
+            const channelList = document.getElementById('channelList');
+            channelList.classList.remove('hidden');
+            channelList.innerHTML = '<h4>Channels:</h4>';
+
+            serverData.text_channels.forEach(channel => {
+                const channelItem = document.createElement('div');
+                channelItem.className = 'channel-item';
+                channelItem.innerHTML = `#${channel.name} <small>(${channel.category})</small>`;
+                channelItem.onclick = () => selectChannel(channel);
+                channelList.appendChild(channelItem);
+            });
+
+            document.getElementById('sendBtn').disabled = true;
+        }
+
+        function selectChannel(channel) {
+            selectedChannel = channel;
+
+            document.querySelectorAll('.channel-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+
+            document.getElementById('sendBtn').disabled = false;
+        }
+
+        async function sendMessage() {
+            const message = document.getElementById('message').value.trim();
+            const messageCount = parseInt(document.getElementById('messageCount').value) || 1;
+            const messageDelay = parseFloat(document.getElementById('messageDelay').value) || 1;
+
+            if (!message || !selectedChannel) {
+                showStatus('messageStatus', 'Please select a channel and enter a message', 'error');
+                return;
+            }
+
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+
+            showStatus('messageStatus', `Sending ${messageCount} message(s) with ${messageDelay}s delay...`, 'info');
+
+            let successCount = 0;
+            let errorCount = 0;
+
+            for (let i = 0; i < messageCount; i++) {
+                try {
+                    const response = await fetch(`/api/send_message/${sessionId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            channel_id: selectedChannel.id,
+                            message: message,
+                            count: 1,
+                            delay: messageDelay
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        successCount++;
+                    } else {
+                        errorCount++;
+                    }
+
+                    // Show progress
+                    showStatus('messageStatus', `Progress: ${i + 1}/${messageCount} - ${successCount} sent, ${errorCount} failed`, 'info');
+
+                    // Wait before next message (except for the last one)
+                    if (i < messageCount - 1) {
+                        await new Promise(resolve => setTimeout(resolve, messageDelay * 1000));
+                    }
+                } catch (error) {
+                    errorCount++;
+                    showStatus('messageStatus', `Progress: ${i + 1}/${messageCount} - ${successCount} sent, ${errorCount} failed`, 'info');
+                }
+            }
+
+            // Final status
+            if (errorCount === 0) {
+                showStatus('messageStatus', `All ${messageCount} messages sent successfully!`, 'success');
+                document.getElementById('message').value = '';
+            } else {
+                showStatus('messageStatus', `Complete: ${successCount} sent, ${errorCount} failed`, 'error');
+            }
+
+            sendBtn.disabled = false;
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            const targetTab = document.getElementById(tabName + 'Tab');
+            if (targetTab) {
+                targetTab.classList.remove('hidden');
+            }
+
+            // Set active tab button
+            const clickedBtn = document.querySelector(`[onclick="showTab('${tabName}')"]`);
+            if (clickedBtn) {
+                clickedBtn.classList.add('active');
+            }
+
+            currentTab = tabName;
+        }
+
+        function showChannelSelector() {
+            const modal = document.getElementById('channelModal');
+            const channelsList = document.getElementById('allChannelsList');
+
+            channelsList.innerHTML = '';
+
+            for (const [serverName, serverData] of Object.entries(servers)) {
+                const serverDiv = document.createElement('div');
+                serverDiv.innerHTML = `<h4>${serverName}</h4>`;
+                channelsList.appendChild(serverDiv);
+
+                serverData.text_channels.forEach(channel => {
+                    const channelDiv = document.createElement('label');
+                    channelDiv.className = 'channel-checkbox';
+                    channelDiv.innerHTML = `
+                        <input type="checkbox" value="${channel.id}" data-server="${serverName}" data-name="${channel.name}">
+                        #${channel.name} (${channel.category})
+                    `;
+                    channelsList.appendChild(channelDiv);
+                });
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeChannelModal() {
+            const modal = document.getElementById('channelModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function addSelectedChannels() {
+            const checkboxes = document.querySelectorAll('#allChannelsList input[type="checkbox"]:checked');
+
+            checkboxes.forEach(checkbox => {
+                const channelId = checkbox.value;
+                const serverName = checkbox.dataset.server;
+                const channelName = checkbox.dataset.name;
+
+                // Check if already selected
+                if (!selectedChannelsForBroadcast.find(ch => ch.id === channelId)) {
+                    selectedChannelsForBroadcast.push({
+                        id: channelId,
+                        name: channelName,
+                        server: serverName
+                    });
+                }
+            });
+
+            updateSelectedChannelsDisplay();
+            closeChannelModal();
+        }
+
+        function updateSelectedChannelsDisplay() {
+            const container = document.getElementById('selectedChannels');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            if (selectedChannelsForBroadcast.length === 0) {
+                container.innerHTML = '<p style="color: #666;">No channels selected</p>';
+                const broadcastBtn = document.getElementById('broadcastBtn');
+                if (broadcastBtn) broadcastBtn.disabled = true;
+                updateTotalMessages();
+                return;
+            }
+
+            selectedChannelsForBroadcast.forEach((channel, index) => {
+                const tag = document.createElement('span');
+                tag.className = 'channel-tag';
+                tag.innerHTML = `#${channel.name} (${channel.server}) <span class="remove" onclick="removeChannelFromBroadcast(${index})">&times;</span>`;
+                container.appendChild(tag);
+            });
+
+            const broadcastBtn = document.getElementById('broadcastBtn');
+            if (broadcastBtn) broadcastBtn.disabled = false;
+            updateTotalMessages();
+        }
+
+        function updateTotalMessages() {
+            const channelCount = selectedChannelsForBroadcast.length;
+            const waveCount = parseInt(document.getElementById('waveCountInput').value) || 1;
+            const multiplier = parseInt(document.getElementById('waveMultiplier').value) || 1;
+            const totalMessages = channelCount * waveCount * multiplier;
+
+            document.getElementById('totalMessagesCount').textContent = totalMessages.toLocaleString();
+
+            // Update the formula display
+            const formulaText = document.querySelector('.total-messages small');
+            if (formulaText) {
+                formulaText.textContent = `(Channels × Waves × Multiplier = ${channelCount} × ${waveCount} × ${multiplier} = Total Messages)`;
+            }
+
+            // Show warning for large numbers
+            const warningElement = document.getElementById('messageCountWarning');
+            if (totalMessages > 1000) {
+                if (!warningElement) {
+                    const warning = document.createElement('div');
+                    warning.id = 'messageCountWarning';
+                    warning.className = 'warning-message';
+                    warning.innerHTML = `<strong>⚠️ Warning:</strong> You're about to send ${totalMessages.toLocaleString()} messages. This may take a very long time and could trigger rate limits.`;
+                    document.getElementById('totalMessagesCount').parentNode.appendChild(warning);
+                }
+            } else if (warningElement) {
+                warningElement.remove();
+            }
+        }
+
+        function updateWaveInputs() {
+            const waveCount = parseInt(document.getElementById('waveCountInput').value) || 1;
+            const container = document.getElementById('waveMessagesContainer');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= waveCount; i++) {
+                const waveDiv = document.createElement('div');
+                waveDiv.className = 'wave-message-input';
+                waveDiv.innerHTML = `
+                    <label for="waveMessage${i}">Wave ${i} Message:</label>
+                    <textarea id="waveMessage${i}" placeholder="Enter message for wave ${i}..." rows="3"></textarea>                `;
+                container.appendChild(waveDiv);
+            }
+
+
+            updateTotalMessages();
+        }
+
+        // Initialize wave inputs on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateWaveInputs();
+        });
+
+        function removeChannelFromBroadcast(index) {
+            selectedChannelsForBroadcast.splice(index, 1);
+            updateSelectedChannelsDisplay();
+        }
+
+        function clearSelectedChannels() {
+            selectedChannelsForBroadcast = [];
+            updateSelectedChannelsDisplay();
+        }
+
+        async function broadcastMessage() {
+            const waveCount = parseInt(document.getElementById('waveCountInput').value) || 1;
+            const multiplier = parseInt(document.getElementById('waveMultiplier').value) || 1;
+            const delayWaves = parseFloat(document.getElementById('broadcastDelayWaves').value) || 1;
+            const delayChannels = parseFloat(document.getElementById('broadcastDelayChannels').value) || 0.5;
+            const delayMultiplier = parseFloat(document.getElementById('broadcastDelayMultiplier').value) || 2;
+
+            if (selectedChannelsForBroadcast.length === 0) {
+                showStatus('broadcastStatus', 'Please select channels first', 'error');
+                return;
+            }
+
+            // Collect messages from individual text boxes
+            const messages = [];
+            for (let i = 1; i <= waveCount; i++) {
+                const messageText = document.getElementById(`waveMessage${i}`).value.trim();
+                if (messageText) {
+                    messages.push(messageText);
+                }
+            }
+
+            if (messages.length === 0) {
+                showStatus('broadcastStatus', 'Please enter at least one wave message', 'error');
+                return;
+            }
+
+            const broadcastBtn = document.getElementById('broadcastBtn');
+            const killBtn = document.getElementById('killBroadcastBtn');
+            broadcastBtn.disabled = true;
+            killBtn.style.display = 'inline-block';
+            const totalMessages = selectedChannelsForBroadcast.length * waveCount * multiplier;
+            showStatus('broadcastStatus', 
+                `Starting broadcast: ${waveCount} waves × ${multiplier} cycles × ${selectedChannelsForBroadcast.length} channels = ${totalMessages} total messages`, 
+                'info');
+
+            try {
+                const response = await fetch(`/api/broadcast_message/${sessionId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        channel_ids: selectedChannelsForBroadcast.map(ch => ch.id),
+                        messages: messages,
+                        wave_count: waveCount,
+                        multiplier: multiplier,
+                        delay_between_waves: delayWaves,
+                        delay_between_channels: delayChannels,
+                        delay_between_multiplier_cycles: delayMultiplier
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showStatus('broadcastStatus', 
+                        `Broadcast complete! ${data.total_sent || 0}/${totalMessages} messages sent successfully across ${data.multiplier || 1} cycles, ${data.wave_count * data.multiplier || 0} total waves to ${data.channels_reached || 0} channels`, 
+                        'success');
+                    // Clear all wave message inputs
+                    for (let i = 1; i <= waveCount; i++) {
+                        const input = document.getElementById(`waveMessage${i}`);
+                        if (input) input.value = '';
+                    }
+                } else {
+                    showStatus('broadcastStatus', 
+                        `Broadcast finished: ${data.total_sent || 0}/${totalMessages} sent, ${data.total_failed || 0} failed`, 
+                        'error');
+                }
+            } catch (error) {
+                showStatus('broadcastStatus', `Broadcast error: ${error.message}`, 'error');
+            } finally {
+                broadcastBtn.disabled = false;
+                const killBtn = document.getElementById('killBroadcastBtn');
+                if (killBtn) killBtn.style.display = 'none';
+            }
+        }
+
+        function updateSettings() {
+            const minDelay = document.getElementById('minDelay').value;
+            const maxDelay = document.getElementById('maxDelay').value;
+
+            fetch('/update_settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    min_delay: parseFloat(minDelay),
+                    max_delay: parseFloat(maxDelay)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showStatus('toolsStatus', 'Settings updated successfully', 'success');
+                } else {
+                    showStatus('toolsStatus', 'Failed to update settings', 'error');
+                }
+            })
+            .catch(error => {
+                showStatus('toolsStatus', 'Network error updating settings', 'error');
+            });
+        }
+
+        function updateAutoReplyMode() {
+            const waveMode = document.getElementById('waveMode').checked;
+            const randomSection = document.getElementById('randomModeSection');
+            const waveSection = document.getElementById('waveModeSection');
+
+            if (waveMode) {
+                randomSection.style.display = 'none';
+                waveSection.style.display = 'block';
+                updateAutoReplyWaveInputs();
+            } else {
+                randomSection.style.display = 'block';
+                waveSection.style.display = 'none';
+            }
+        }
+
+        function updateAutoReplyWaveInputs() {
+            const waveCount = parseInt(document.getElementById('autoReplyWaveCount').value) || 1;
+            const container = document.getElementById('autoReplyWaveContainer');
+
+            container.innerHTML = '';
+
+            for (let i = 1; i <= waveCount; i++) {
+                const waveDiv = document.createElement('div');
+                waveDiv.className = 'form-group';
+                waveDiv.innerHTML = `
+                    <label for="autoReplyWave${i}">Reply ${i} Message:</label>
+                    <textarea id="autoReplyWave${i}" rows="2" placeholder="Message for ${i}${i === 1 ? 'st' : i === 2 ? 'nd' : i === 3 ? 'rd' : 'th'} reply..."></textarea>
+                `;
+                container.appendChild(waveDiv);
+            }
+        }
+
+        function updateAutoReply() {
+            const enabled = document.getElementById('autoReplyEnabled').checked;
+            const waveMode = document.getElementById('waveMode').checked;
+            const maxPerUser = parseInt(document.getElementById('maxRepliesPerUser').value) || 3;
+            const resetTimeHours = parseFloat(document.getElementById('resetTimeHours').value) || 1;
+            const delayMin = parseFloat(document.getElementById('autoReplyDelayMin').value) || 3;
+            const delayMax = parseFloat(document.getElementById('autoReplyDelayMax').value) || 8;
+
+            let messages = [];
+            let waveMessages = [];
+
+            if (waveMode) {
+                // Collect wave messages
+                const waveCount = parseInt(document.getElementById('autoReplyWaveCount').value) || 1;
+                for (let i = 1; i <= waveCount; i++) {
+                    const messageText = document.getElementById(`autoReplyWave${i}`)?.value?.trim();
+                    if (messageText) {
+                        waveMessages.push(messageText);
+                    }
+                }
+                if (waveMessages.length === 0) {
+                    showStatus('toolsStatus', 'Please enter at least one wave message', 'error');
+                    return;
+                }
+                // In wave mode, messages array should be empty
+                messages = [];
+            } else {
+                // Collect random messages
+                messages = document.getElementById('autoReplyMessages').value
+                    .split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+                if (messages.length === 0) {
+                    showStatus('toolsStatus', 'Please enter at least one message', 'error');
+                    return;
+                }
+                // In random mode, wave messages should be empty
+                waveMessages = [];
+            }
+
+            // Debug logging
+            console.log('Sending auto-reply data:', {
+                enabled: enabled,
+                messages: messages,
+                max_per_user: maxPerUser,
+                delay_min: delayMin,
+                delay_max: delayMax,
+                reset_time: Math.round(resetTimeHours * 3600),
+                wave_mode: waveMode,
+                wave_messages: waveMessages
+            });
+
+            fetch(`/api/update_auto_reply/${sessionId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    enabled: enabled,
+                    messages: messages,
+                    max_per_user: maxPerUser,
+                    delay_min: delayMin,
+                    delay_max: delayMax,
+                    reset_time: Math.round(resetTimeHours * 3600),
+                    wave_mode: waveMode,
+                    wave_messages: waveMessages
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const modeText = waveMode ? `per-wave (${waveMessages.length} messages)` : `random (${messages.length} messages)`;
+                    showStatus('toolsStatus', `Auto-reply updated: ${modeText}, ${maxPerUser} max/user, ${delayMin}-${delayMax}s delay`, 'success');
+                } else {
+                    showStatus('toolsStatus', 'Failed to update auto-reply', 'error');
+                }
+            })
+            .catch(error => {
+                showStatus('toolsStatus', 'Network error updating auto-reply', 'error');
+            });
+        }
+
+        // Initialize auto-reply wave inputs on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAutoReplyWaveInputs();
+        });
+
+        function scanServers() {
+            showStatus('toolsStatus', 'Rescanning servers...', 'info');
+
+            fetch(`/api/rescan_servers/${sessionId}`, {
+                method: 'POST',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadServers();
+                    showStatus('toolsStatus', 'Servers rescanned successfully', 'success');
+                } else {
+                    showStatus('toolsStatus', 'Failed to rescan servers', 'error');
+                }
+            })
+            .catch(error => {
+                showStatus('toolsStatus', 'Network error during rescan', 'error');
+            });
+        }
+
+        function exportData() {
+            fetch(`/api/export_data/${sessionId}`, {
+                credentials: 'include'
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'server_data.json';
+                a.click();
+                window.URL.revokeObjectURL(url);
+                showStatus('toolsStatus', 'Data exported successfully', 'success');
+            })
+            .catch(error => {
+                showStatus('toolsStatus', 'Failed to export data', 'error');
+            });
+        }
+
+        function clearCache() {
+            if (confirm('Are you sure you want to clear all cached data?')) {
+                servers = {};
+                displayServers();
+                showStatus('toolsStatus', 'Cache cleared', 'success');
+            }
+        }
+
+        function extractInvites() {
+            showStatus('inviteResults', 'Extracting invite links...', 'info');
+
+            fetch(`/api/extract_invites/${sessionId}`, {
+                method: 'POST',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const inviteDiv = document.getElementById('inviteResults');
+                    let html = `<h4>Found ${data.invites.length} invite links:</h4>`;
+                    data.invites.forEach(invite => {
+                        html += `<p><strong>${invite.server}:</strong> <a href="${invite.url}" target="_blank">${invite.url}</a></p>`;
+                    });
+                    inviteDiv.innerHTML = html;
+                } else {
+                    showStatus('inviteResults', 'Failed to extract invites', 'error');
+                }
+            })
+            .catch(error => {
+                showStatus('inviteResults', 'Network error during invite extraction', 'error');
+            });
+        }
+
+        // Broadcasting Config Save/Load Functions
+        function saveBroadcastConfig() {
+            const waveCount = parseInt(document.getElementById('waveCountInput').value) || 1;
+            const multiplier = parseInt(document.getElementById('waveMultiplier').value) || 1;
+            const delayWaves = parseFloat(document.getElementById('broadcastDelayWaves').value) || 1;
+            const delayChannels = parseFloat(document.getElementById('broadcastDelayChannels').value) || 0.5;
+            const delayMultiplier = parseFloat(document.getElementById('broadcastDelayMultiplier').value) || 2;
+
+            // Collect messages from individual text boxes
+            const messages = [];
+            for (let i = 1; i <= waveCount; i++) {
+                const messageText = document.getElementById(`waveMessage${i}`)?.value?.trim() || '';
+                messages.push(messageText);
+            }
+
+            const config = {
+                selectedChannels: selectedChannelsForBroadcast,
+                waveCount: waveCount,
+                multiplier: multiplier,
+                delayWaves: delayWaves,
+                delayChannels: delayChannels,
+                delayMultiplier: delayMultiplier,
+                messages: messages,
+                timestamp: new Date().toISOString(),
+                version: "1.0"
+            };
+
+            const dataStr = JSON.stringify(config, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+            const exportFileDefaultName = `broadcast_config_${new Date().toISOString().slice(0,10)}.json`;
+
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+
+            showStatus('broadcastStatus', 'Broadcasting config saved successfully!', 'success');
+        }
+
+        function loadBroadcastConfig(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const config = JSON.parse(e.target.result);
+
+                    // Validate config structure
+                    if (!config.version || !config.selectedChannels || !config.messages) {
+                        throw new Error('Invalid config file format');
+                    }
+
+                    // Restore selected channels
+                    selectedChannelsForBroadcast = config.selectedChannels || [];
+                    updateSelectedChannelsDisplay();
+
+                    // Restore wave settings
+                    document.getElementById('waveCountInput').value = config.waveCount || 1;
+                    document.getElementById('waveMultiplier').value = config.multiplier || 1;
+                    document.getElementById('broadcastDelayWaves').value = config.delayWaves || 1;
+                    document.getElementById('broadcastDelayChannels').value = config.delayChannels || 0.5;
+                    document.getElementById('broadcastDelayMultiplier').value = config.delayMultiplier || 2;
+
+                    // Update wave inputs and restore messages
+                    updateWaveInputs();
+
+                    // Wait a moment for inputs to be created, then restore messages
+                    setTimeout(() => {
+                        config.messages.forEach((message, index) => {
+                            const messageInput = document.getElementById(`waveMessage${index + 1}`);
+                            if (messageInput) {
+                                messageInput.value = message;
+                            }
+                        });
+                    }, 100);
+
+                    showStatus('broadcastStatus', 'Broadcasting config loaded successfully!', 'success');
+
+                } catch (error) {
+                    showStatus('broadcastStatus', `Error loading config: ${error.message}`, 'error');
+                }
+            };
+            reader.readAsText(file);
+
+            // Clear the input so the same file can be loaded again if needed
+            event.target.value = '';
+        }
+
+        // Auto-Reply Config Save/Load Functions
+        function saveAutoReplyConfig() {
+            const enabled = document.getElementById('autoReplyEnabled').checked;
+            const waveMode = document.getElementById('waveMode').checked;
+            const maxPerUser = parseInt(document.getElementById('maxRepliesPerUser').value) || 3;
+            const resetTimeHours = parseFloat(document.getElementById('resetTimeHours').value) || 1;
+            const delayMin = parseFloat(document.getElementById('autoReplyDelayMin').value) || 3;
+            const delayMax = parseFloat(document.getElementById('autoReplyDelayMax').value) || 8;
+
+            let messages = [];
+            let waveMessages = [];
+
+            if (waveMode) {
+                // Collect wave messages
+                const waveCount = parseInt(document.getElementById('autoReplyWaveCount').value) || 1;
+                for (let i = 1; i <= waveCount; i++) {
+                    const messageText = document.getElementById(`autoReplyWave${i}`)?.value?.trim() || '';
+                    waveMessages.push(messageText);
+                }
+            } else {
+                // Collect random messages
+                messages = document.getElementById('autoReplyMessages').value
+                    .split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+            }
+
+            const config = {
+                enabled: enabled,
+                waveMode: waveMode,
+                maxPerUser: maxPerUser,
+                resetTimeHours: resetTimeHours,
+                delayMin: delayMin,
+                delayMax: delayMax,
+                messages: messages,
+                waveMessages: waveMessages,
+                waveCount: waveMode ? parseInt(document.getElementById('autoReplyWaveCount').value) || 1 : 1,
+                timestamp: new Date().toISOString(),
+                version: "1.0"
+            };
+
+            const dataStr = JSON.stringify(config, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+            const exportFileDefaultName = `autoreply_config_${new Date().toISOString().slice(0,10)}.json`;
+
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+
+            showStatus('toolsStatus', 'Auto-reply config saved successfully!', 'success');
+        }
+
+        function loadAutoReplyConfig(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const config = JSON.parse(e.target.result);
+
+                    // Validate config structure
+                    if (!config.version) {
+                        throw new Error('Invalid config file format');
+                    }
+
+                    // Restore basic settings
+                    document.getElementById('autoReplyEnabled').checked = config.enabled || false;
+                    document.getElementById('maxRepliesPerUser').value = config.maxPerUser || 3;
+                    document.getElementById('resetTimeHours').value = config.resetTimeHours || 1;
+                    document.getElementById('autoReplyDelayMin').value = config.delayMin || 3;
+                    document.getElementById('autoReplyDelayMax').value = config.delayMax || 8;
+
+                    // Restore mode selection
+                    if (config.waveMode) {
+                        document.getElementById('waveMode').checked = true;
+                        document.getElementById('randomMode').checked = false;
+
+                        // Set wave count and update inputs
+                        document.getElementById('autoReplyWaveCount').value = config.waveCount || 1;
+                        updateAutoReplyMode();
+                        updateAutoReplyWaveInputs();
+
+                        // Wait a moment for inputs to be created, then restore wave messages
+                        setTimeout(() => {
+                            config.waveMessages.forEach((message, index) => {
+                                const messageInput = document.getElementById(`autoReplyWave${index + 1}`);
+                                if (messageInput) {
+                                    messageInput.value = message;
+                                }
+                            });
+                        }, 100);
+                    } else {
+                        document.getElementById('randomMode').checked = true;
+                        document.getElementById('waveMode').checked = false;
+                        updateAutoReplyMode();
+
+                        // Restore random messages
+                        document.getElementById('autoReplyMessages').value = config.messages.join('\n');
+                    }
+
+                    showStatus('toolsStatus', 'Auto-reply config loaded successfully!', 'success');
+
+                } catch (error) {
+                    showStatus('toolsStatus', `Error loading config: ${error.message}`, 'error');
+                }
+            };
+            reader.readAsText(file);
+
+            // Clear the input so the same file can be loaded again if needed
+            event.target.value = '';
+        }
+
+        async function killBroadcast() {
+            if (!confirm('Are you sure you want to stop the current broadcast?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/kill_broadcast/${sessionId}`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showStatus('broadcastStatus', result.message, 'info');
+                    document.getElementById('killBroadcastBtn').style.display = 'none';
+                } else {
+                    showStatus('broadcastStatus', result.message, 'info');
+                }
+            } catch (error) {
+                showStatus('broadcastStatus', `Error killing broadcast: ${error.message}`, 'error');
+            }
+        }
+
+        async function getBroadcastStatus() {
+            try {
+                const response = await fetch(`/api/broadcast_status/${sessionId}`);
+                const result = await response.json();
+
+                if (result.total_active === 0) {
+                    showStatus('No active broadcasts', 'info');
+                } else {
+                    let statusMsg = `Active broadcasts: ${result.total_active}\n`;
+                    result.active_broadcasts.forEach(broadcast => {
+                        statusMsg += `- ${broadcast.sent_count}/${broadcast.total_messages} messages sent (${broadcast.failed_count} failed)\n`;
+                    });
+                    showStatus(statusMsg, 'info');
+                }
+            } catch (error) {
+                showStatus(`Error checking status: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

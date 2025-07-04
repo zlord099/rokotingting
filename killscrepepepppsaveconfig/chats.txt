@@ -1,0 +1,6 @@
+# Messages to send (one per line)
+# Lines starting with # are comments
+
+ RACOON PLEASE
+  
+# Add your messages below:

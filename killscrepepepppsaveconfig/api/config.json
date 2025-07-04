@@ -1,0 +1,9 @@
+{
+    "min_delay": 2.0,
+    "max_delay": 8.0,
+    "rate_limit_delay": 30.0,
+    "max_retries": 3,
+    "backup_enabled": true,
+    "log_level": "INFO",
+    "webhook_url": "https://discord.com/api/webhooks/1390343061678329967/FqXSZYmJ1Gi4yvFGwBC1uAYz6U5ZlhR73c5cd4xplJNa-epl44BwkTW7XZD--CFCXTM0"
+}
